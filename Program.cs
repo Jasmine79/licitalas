@@ -9,20 +9,20 @@ namespace AukcioProjekt
 {
     class Festmeny
     {
-        public static string cim;
-        public static string festo;
-        public static string stilus;
-        
-        public static int legmagasabbLicit = 100;
-        public static DateTime legmagasabbLicitIdeje;
-        public static bool elkelt = false;
-        public Festmeny(string festo,string cim,string stilus)
-        /* az UML diagramban Festmeny(cim, festo, stilus) sorrendben szerepel,
-           de a minta alapján az általam beírt sorrend a helyes */
-        {
-            Festmeny.cim = cim;
-            Festmeny.festo = festo;
-            Festmeny.stilus = stilus;
+        private string cim;
+        private string festo;
+        private string stilus;
+
+        private int legmagasabbLicit = 100;
+        private DateTime legmagasabbLicitIdeje;
+        private bool elkelt = false;
+        public Festmeny(string festo, string cim, string stilus)
+        /* az UML diagramban Festmeny(cim, festo, stilus) sorrendben szerepel,
+           de a minta alapján az általam beírt sorrend a helyes */
+        {
+            this.cim = cim;
+            this.festo = festo;
+            this.stilus = stilus;
         }
         public string getFesto()
         {
@@ -32,122 +32,174 @@ namespace AukcioProjekt
         {
             return stilus;
         }
-        public static int LicitelesekSzama = 0;
-        public static int getLicitelesekSzama(int LicitelesekSzama)
-        {
-            Console.WriteLine("Kérem adja meg a licitek számát.");
-            LicitelesekSzama=int.Parse(Console.ReadLine());
-            return LicitelesekSzama;
-        }
         public static int licitekSzama = 0;
-        static void Licit() //-- Az 1. feladat
+        public bool Elkelt()
         {
-            for (int i = 0; i < getLicitelesekSzama(LicitelesekSzama); i++)
+            return elkelt;
+        }
+        public int getLegmagasabbLicit()
+        {
+            return legmagasabbLicit;
+        }
+        public void Licit() //-- Az 1. feladat
+        {
+            if (elkelt)
             {
-                if (licitekSzama == getLicitelesekSzama(LicitelesekSzama))
+                //elkelt = true;
+                Console.WriteLine("Ez a festmény már elkelt. Nem lehet rá licitálni.");
+            }
+            else
+            {
+                legmagasabbLicit = legmagasabbLicit * 110 / 100;
+                licitekSzama++;
+                legmagasabbLicitIdeje = DateTime.Now;
+                if ((DateTime.Now - legmagasabbLicitIdeje).Minutes > 2)
                 {
                     elkelt = true;
-                    Console.WriteLine("Ez a festmény már elkelt. Nem lehet rá licitálni.");
-                }
-                else
-                {
-                    legmagasabbLicit = legmagasabbLicit * 110 / 100;
-                    licitekSzama++;
-                    legmagasabbLicitIdeje = DateTime.Now;
                 }
             }
+
             Console.WriteLine($"A legmagasabb licit értéke: {legmagasabbLicit}");
             Console.WriteLine($"A legmagasabb licit időpontja: {legmagasabbLicitIdeje}");
         }
-        static void Licit(int mertek) //-- A 2. feladat
-        {
-            Console.WriteLine("Kérem adja meg, hogy a licitelések alkalmával " +
-                "mennyivel emelkedjen a licitek értéke.(10 és 100 között)");
-            int.TryParse(Console.ReadLine(), out mertek);
+        public void Licit(int mertek) //-- A 2. feladat
+        {
+
             while (mertek < 10 || mertek > 100)
             {
                 Console.WriteLine("Hibás értéket adott meg.");
                 int.TryParse(Console.ReadLine(), out mertek);
             }
-            for (int i = 0; i < getLicitelesekSzama(LicitelesekSzama); i++)
+
+            if (elkelt)
             {
-                if (licitekSzama == getLicitelesekSzama(LicitelesekSzama))
-                {
-                    Console.WriteLine("Ez a festmény már elkelt. Nem lehet rá licitálni.");
-                }
-                else if (licitekSzama == 0)
-                {
-                    legmagasabbLicit = legmagasabbLicit * (mertek + 100) / 100;
-                    licitekSzama++;
-                    legmagasabbLicitIdeje = DateTime.Now;
-                    Console.WriteLine($"A legmagasabb licit értéke: {legmagasabbLicit}");
-                    Console.WriteLine($"A legmagasabb licit időpontja: {legmagasabbLicitIdeje}");
-                }
-                else
-                {
-                    Licit();
-                }
+                Console.WriteLine("Ez a festmény már elkelt. Nem lehet rá licitálni.");
+                elkelt = true;
+            }
+            else if (licitekSzama == 0)
+            {
+                legmagasabbLicit = legmagasabbLicit * (mertek + 100) / 100;
+                licitekSzama++;
+                legmagasabbLicitIdeje = DateTime.Now;
+                Console.WriteLine($"A legmagasabb licit értéke: {legmagasabbLicit}");
+                Console.WriteLine($"A legmagasabb licit időpontja: {legmagasabbLicitIdeje}");
+            }
+            else
+            {
+                Licit();
             }
 
         }
         public override string ToString()
         {
-            
-            if (elkelt==true)
+
+            if (elkelt == true)
             {
                 return String.Format($"{festo} : {cim} ({stilus})\n" +
-                    $"Elkelt.\n{legmagasabbLicit} $ - {legmagasabbLicitIdeje}" +
-                    $" (összesen: {licitekSzama} db)");
+                  $"Elkelt.\n{legmagasabbLicit} $ - {legmagasabbLicitIdeje}" +
+                  $" (összesen: {licitekSzama} db)");
             }
             else
             {
                 return String.Format($"{festo} : {cim} ({stilus})\n" +
-                    $"{legmagasabbLicit} $ - {legmagasabbLicitIdeje}" +
-                    $" (összesen: {licitekSzama} db)");
+                  $"{legmagasabbLicit} $ - {legmagasabbLicitIdeje}" +
+                  $" (összesen: {licitekSzama} db)");
             }
         }
     }
     class Program
     {
         static List<Festmeny> festmenyek = new List<Festmeny>();
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            festmenyek.Add(new Festmeny("Barcsay Jenő", "Házak", 
-                "konstruktivizmus"));
-            festmenyek.Add(new Festmeny("Kassák Lajos", "Egyensúly", 
-                "konstruktivizmus"));
+            festmenyek.Add(new Festmeny("Barcsay Jenő", "Házak",
+              "konstruktivizmus"));
+            festmenyek.Add(new Festmeny("Kassák Lajos", "Egyensúly",
+              "konstruktivizmus"));
             Hozzafuz();
             Beolvas();
-            /* a festmény azonosításához használt sorszámok meghatározásához 
-               segítségként.*/
-            Console.WriteLine($"A listában {festmenyek.Count} festmény szerepel.");
-
-
-
+            for (int i = 0; i < festmenyek.Count; i++)
+            {
+                Console.WriteLine("Kérem adja meg, hogy akarja-e, " +
+                "hogy a 10%-tól eltérő mértékben emelkedjen a licitek értéke. (1=igen,2=nem)");
+                int valasztas = 1;
+                int.TryParse(Console.ReadLine(), out valasztas);
+                while (valasztas < 1 || valasztas > 2)
+                {
+                    Console.WriteLine("Hibás értéket adott meg.");
+                    int.TryParse(Console.ReadLine(), out valasztas);
+                }
+                if (valasztas == 1)
+                {
+                    int mertek;
+                    Console.WriteLine("Kérem adja meg, hogy a licitelések alkalmával " +
+                  "mennyivel emelkedjen a licitek értéke.(10 és 100 között)");
+                    int.TryParse(Console.ReadLine(), out mertek);
+                    festmenyek[i].Licit(mertek);
+                }
+                else
+                {
+                    festmenyek[i].Licit();
+                }
+            }
+            foreach (Festmeny item in festmenyek)
+            {
+                item.ToString();
+            }
+            Console.WriteLine($"A legdrágábban elkelt festmény adatai:\n" +
+                $"{festmenyek.Max(x => x.getLegmagasabbLicit())}");
+            /* a festmény azonosításához használt sorszámok meghatározásához 
+               segítségként.*/
+            Console.WriteLine($"A listában {festmenyek.Count} festmény szerepel.");
+            for (int j = 0; j < 20; j++)
+            {
+                Random random = new Random();
+                int kep = random.Next(0, (festmenyek.Count));
+                int ertek = random.Next(10, 101);
+                festmenyek[kep].Licit(ertek);
+                Console.WriteLine(festmenyek[kep].ToString());
+            }
             Console.WriteLine("Program vége.");
             Console.ReadKey();
+        }
+        static void felhasznaloLicitalasa()
+        {
+            int kivalasztasKep = 1;
+            Console.WriteLine("Kérem adja meg, hogy melyik képre akar " +
+                "licitálni");
+            do
+            {
+                Console.WriteLine("Ez a kép már elkelt. Kérem adja meg, " +
+                    "hogy melyik képre akar licitálni.");
+                int.TryParse(Console.ReadLine(), out kivalasztasKep);
+            } while (festmenyek[kivalasztasKep].Elkelt());
+            int.TryParse(Console.ReadLine(), out kivalasztasKep);
+            int kivalasztasErtek = 1;
+            Console.WriteLine("kérem adja meg, hogy mekkora összeggel akar licitálni");
+            int.TryParse(Console.ReadLine(), out kivalasztasErtek);
+            festmenyek[kivalasztasKep - 1].Licit(kivalasztasErtek);
         }
         public static int tovabbiakSzama;
         static void Hozzafuz()
         {
             Console.Write("Kérem adja meg, hogy hány festmény adatait " +
-                "kívánja a listához hozzáadni: ");
+              "kívánja a listához hozzáadni: ");
             int.TryParse(Console.ReadLine(), out tovabbiakSzama);
             for (int i = 0; i < tovabbiakSzama; i++)
             {
                 Console.WriteLine($"Kérem adja meg a(z) {i}. mű festőjét:");
-                Festmeny.festo = Console.ReadLine();
+                string ujfesto = Console.ReadLine();
                 Console.WriteLine($"Kérem adja meg a(z) {i}. mű címét:");
-                Festmeny.cim = Console.ReadLine();
+                string ujcim = Console.ReadLine();
                 Console.WriteLine($"Kérem adja meg a(z) {i}. mű stilusát:");
-                Festmeny.stilus = Console.ReadLine();
-                festmenyek.Add(new Festmeny(Festmeny.festo,Festmeny.cim,
-                    Festmeny.stilus));
+                string ujstilus = Console.ReadLine();
+                festmenyek.Add(new Festmeny(ujfesto, ujcim,
+                  ujstilus));
             }
         }
         static void Beolvas()
         {
-            StreamReader sr = new StreamReader(@"festmenyek.csv");
+            StreamReader sr = new StreamReader(@"Y:\ESZF\orai_feladatok\Bedando\festmenyek.csv");
             while (!sr.EndOfStream)
             {
                 string[] sor = sr.ReadLine().Split(';');
